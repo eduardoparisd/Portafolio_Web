@@ -1,4 +1,5 @@
 import reflex as rx
+import httpx
 from typing import TypedDict
 
 class ProjectItem(TypedDict):
@@ -93,21 +94,48 @@ class PortfolioState(rx.State):
     @rx.event
     async def submit_contact(self, form_data: dict):
         self.is_submitting = True
-        self.contact_status = "Verifying..."
-        import asyncio
+        self.contact_status = "Enviando..."
+        yield
 
-        await asyncio.sleep(1.5)
+        payload = {
+            "name": form_data.get("name", "").strip(),
+            "email": form_data.get("email", "").strip(),
+            "message": form_data.get("message", "").strip(),
+        }
 
-        # Simple extraction
-        self.contact_name = form_data.get("name", "")
-        self.contact_email = form_data.get("email", "")
-        self.contact_message = form_data.get("message", "")
+        try:
+            async with httpx.AsyncClient(timeout=10.0) as client:
+                response = await client.post(
+                    "http://localhost:8000/api/v1/contact/",  # en prod: URL interna Docker
+                    json=payload,
+                )
 
-        self.is_submitting = False
-        self.contact_status = "Message Sent!"
-        yield rx.toast(
-            "Connection request recorded successfully!", duration=4000
-        )
+            if response.status_code == 201:
+                self.contact_status = "¡Mensaje Enviado!"
+                yield rx.toast.success(
+                    "Mensaje recibido. Te contactaré pronto.", duration=4000
+                )
+            elif response.status_code == 429:
+                self.contact_status = "ENVIAR"
+                yield rx.toast.error(
+                    "Has enviado demasiados mensajes. Intenta más tarde.", duration=5000
+                )
+            else:
+                self.contact_status = "ENVIAR"
+                yield rx.toast.error(
+                    "Error al enviar. Inténtalo de nuevo.", duration=4000
+                )
+
+        except httpx.TimeoutException:
+            self.contact_status = "ENVIAR"
+            yield rx.toast.error("Tiempo de espera agotado. Inténtalo de nuevo.", duration=4000)
+
+        except httpx.RequestError:
+            self.contact_status = "ENVIAR"
+            yield rx.toast.error("No se pudo conectar con el servidor.", duration=4000)
+
+        finally:
+            self.is_submitting = False
 
     @rx.event
     def select_tab(self, tab: str):

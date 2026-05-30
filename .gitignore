@@ -1,15 +1,19 @@
-.states
-*.db
-*.py[cod]
-.web
-assets/external/
-# Python-generated files
+.states 0
+assets/external/ 0
+*.py[oc] 0
+wheels/ 0
 __pycache__/
-*.py[oc]
-build/
+*.py[cod] 0
+.venv/
+venv/
+*.egg-info/
 dist/
-wheels/
-*.egg-info
-
-# Virtual environments
-.venv
+build/
+.env 
+!.env.example           
+.web/
+*.db
+nginx/ssl/                  
+.vscode/settings.json
+*.swp
+.DS_Store

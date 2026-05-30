@@ -1,0 +1,54 @@
+# ─────────────────────────────────────────────────────────────
+# PR Check — corre solo en Pull Requests
+# Solo tests y seguridad, sin build ni deploy
+# ─────────────────────────────────────────────────────────────
+
+name: PR Check
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+
+  test:
+    name: Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+          cache-dependency-path: portafolio_web/Backend/requirements.txt
+
+      - name: Instalar dependencias
+        run: |
+          cd portafolio_web/Backend
+          pip install -r requirements.txt
+
+      - name: Correr tests
+        run: |
+          cd portafolio_web/Backend
+          pytest tests/ -v --tb=short
+
+  lint:
+    name: Lint Python
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Instalar ruff
+        run: pip install ruff
+
+      - name: Lint backend
+        run: |
+          cd portafolio_web/Backend
+          ruff check app/
