@@ -80,7 +80,7 @@ jobs:
           docker build \
             -t portfolio-frontend:scan \
             -f Dockerfile.frontend \
-            ./portafolio_web
+            .
 
       - name: Trivy — escanear imagen frontend
         uses: aquasecurity/trivy-action@master
@@ -126,7 +126,7 @@ jobs:
       - name: Build y Push — Frontend
         uses: docker/build-push-action@v5
         with:
-          context: ./portafolio_web
+          context: .
           file: ./Dockerfile.frontend
           push: true
           tags: |
