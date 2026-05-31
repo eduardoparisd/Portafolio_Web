@@ -17,3 +17,4 @@ nginx/ssl/
 .vscode/settings.json
 *.swp
 .DS_Store
+postgres_data/
