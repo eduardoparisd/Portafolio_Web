@@ -55,22 +55,6 @@ services:
     depends_on:
       - backend
 
-  # ── Nginx ─────────────────────────────────────────────────────
-  nginx:
-    image: nginx:alpine
-    container_name: portfolio_nginx
-    restart: unless-stopped
-    volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./nginx/ssl:/etc/nginx/ssl:ro
-      - ./certbot_www:/var/www/certbot:ro
-    networks:
-      - frontend_net
-      - backend_net
-    depends_on:
-      - frontend
-      - backend
-
 # ── Redes ─────────────────────────────────────────────────────
 networks:
   frontend_net:
