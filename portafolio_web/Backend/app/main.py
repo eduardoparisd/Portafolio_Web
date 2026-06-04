@@ -32,6 +32,7 @@ app.add_middleware(
 
 # Routers
 app.include_router(contact_router, prefix="/api/v1")
+app.include_router(health_router, prefix="/api/v1")
 
 
 @app.get("/health", tags=["Health"])
