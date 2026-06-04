@@ -6,7 +6,6 @@ from app.core.config import settings
 from app.db.database import create_tables
 from app.api.v1.contact import router as contact_router
 
-
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Startup / Shutdown events."""
@@ -32,7 +31,6 @@ app.add_middleware(
 
 # Routers
 app.include_router(contact_router, prefix="/api/v1")
-app.include_router(health_router, prefix="/api/v1")
 
 
 @app.get("/health", tags=["Health"])
